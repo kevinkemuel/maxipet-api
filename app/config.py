@@ -2,9 +2,13 @@ from pydantic_settings import BaseSettings
 from typing import List
 
 class Settings(BaseSettings):
-    # Supabase
+    # Supabase ERP (mvyshricuovdufooldzz.supabase.co — schema maxipet)
     supabase_url: str
     supabase_key: str
+
+    # Supabase Catálogo (db.maxipetonline.com — schema public)
+    supabase_catalog_url: str
+    supabase_catalog_key: str
     
     # API Security
     api_key_token: str

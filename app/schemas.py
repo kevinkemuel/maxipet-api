@@ -1,9 +1,66 @@
 from pydantic import BaseModel, Field, HttpUrl, validator
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 from decimal import Decimal
 
-# ============= Product Schemas =============
+# ============= Catálogo Schemas (productos_catalogo + relaciones) =============
+
+class ProductoFotoResponse(BaseModel):
+    id: Optional[int] = None
+    url: str
+    es_principal: bool
+    orden: int
+
+class CategoriaResponse(BaseModel):
+    id: int
+    nombre: str
+    slug: str
+    padre_id: Optional[int] = None
+
+class EspecieResponse(BaseModel):
+    id: int
+    nombre: str
+
+class ProductoCatalogoBase(BaseModel):
+    nombre: str = Field(..., min_length=1, max_length=500)
+    SKU: Optional[str] = Field(None, max_length=100)
+    descripcion: Optional[str] = None
+    precio: Optional[str] = None
+    marca: Optional[str] = Field(None, max_length=200)
+    inventario: Optional[str] = None
+    bajo_inventario: Optional[str] = None
+    publicado: Optional[str] = None
+    visible_catalogo: Optional[str] = None
+
+class ProductoCatalogoCreate(ProductoCatalogoBase):
+    pass
+
+class ProductoCatalogoUpdate(BaseModel):
+    nombre: Optional[str] = Field(None, min_length=1, max_length=500)
+    SKU: Optional[str] = Field(None, max_length=100)
+    descripcion: Optional[str] = None
+    precio: Optional[str] = None
+    marca: Optional[str] = Field(None, max_length=200)
+    inventario: Optional[str] = None
+    bajo_inventario: Optional[str] = None
+    publicado: Optional[str] = None
+    visible_catalogo: Optional[str] = None
+
+class ProductoCatalogoResponse(ProductoCatalogoBase):
+    id: int
+    producto_fotos: List[ProductoFotoResponse] = []
+    producto_categorias: List[Any] = []
+    producto_especies: List[Any] = []
+
+    class Config:
+        from_attributes = True
+
+class SkuLookupResponse(BaseModel):
+    found_in: str  # "catalog" | "erp"
+    producto: Optional[dict] = None   # populated when found_in == "catalog"
+    erp_data: Optional[dict] = None   # populated when found_in == "erp" (pre-fills form)
+
+# ============= Product Schemas (ERP legacy — se mantiene para compatibilidad) =============
 
 class ProductBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
